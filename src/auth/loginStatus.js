@@ -13,7 +13,7 @@ async function checkLoginStatus() {
     } else {
         try {
             const data = await handleNewRefreshToken();
-            await tokenControl.setAccessToken(rememberControl.rememberFlag === "true", data.access);
+            await tokenControl.setAccessToken(rememberControl.rememberFlag === "true", data?.access);
             return true;
         } catch (err) {
             console.log(err)
