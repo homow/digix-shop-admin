@@ -1,4 +1,4 @@
-import {handleCreateCategory, handleCreateTag, handleGetAllCategories, handleGetAllTag, handleCreateNewProduct} from "@/auth/auth.js";
+import {handleCreateCategory, handleCreateTag, getAllCategories, getAllTags, handleCreateNewProduct} from "@/auth/auth.js";
 import {serverDisconnect, tokenControl} from "@/auth/api-utils.js";
 import {formatToPrice} from "@/utils.js"
 import {themeControl} from "@/ui/utils-ui.js";
@@ -97,6 +97,12 @@ const renderAdminPanel = () => {
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">قیمت (تومان)</span>
     <input type="text" id="product-price" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً 12,0000" required min="0" dir="rtl"/>
   </label>
+  
+  <!-- discount_percent -->
+  <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
+    <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">تخفیف (درصد)</span>
+    <input type="number" id="discount-percent" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً 20" dir="rtl"/>
+  </label>
 
   <!-- inventory -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
@@ -118,7 +124,7 @@ const renderAdminPanel = () => {
     <select id="product-tags" multiple class="w-8/10 input-field border border-sub-text rounded p-2"></select>
   </label>
 
-  <p data-error-message class="text-red-700 dark:text-red-500"></p>
+  <p data-error-message class="my-8 text-center font-bold text-red-700 dark:text-red-500"></p>
   <button type="submit" class="primary-btn w-full">اضافه کردن محصول</button>
 </form>
 </div>
@@ -161,8 +167,7 @@ const bindEvent = () => {
         }
 
         try {
-            const res = await handleCreateCategory(name, slug);
-            console.log("server response: ", res);
+            await handleCreateCategory(name, slug);
             successMessage.textContent = "دسته بندی با موفقیت اضافه شد"
             textError.textContent = "";
             createFormCategory.reset();
@@ -171,7 +176,6 @@ const bindEvent = () => {
             if (err instanceof TypeError) {
                 serverDisconnect(textError)
             } else {
-                console.error("Error: ", err);
                 textError.textContent = err.message;
             }
         }
@@ -192,7 +196,6 @@ const bindEvent = () => {
 
         try {
             const res = await handleCreateTag(name);
-            console.log("✅ پاسخ سرور:", res);
             successMessage.textContent = "برچسب با موفقیت اضافه شد";
             textError.textContent = "";
             createTagForm.reset();
@@ -201,7 +204,6 @@ const bindEvent = () => {
             if (err instanceof TypeError) {
                 serverDisconnect(textError);
             } else {
-                console.error("❌ خطا:", err);
                 textError.textContent = err.message;
             }
         }
@@ -212,7 +214,7 @@ const bindEvent = () => {
         const selectProductCategory = document.getElementById("product-category");
 
         try {
-            const res = await handleGetAllCategories();
+            const res = await getAllCategories();
             addAllCategoriesToDOM(res)
         } catch (e) {
             console.log(e)
@@ -242,7 +244,7 @@ const bindEvent = () => {
         const selectProductTags = document.getElementById("product-tags");
 
         try {
-            const res = await handleGetAllTag();
+            const res = await getAllTags();
             addAllTagsToDOM(res)
         } catch (e) {
             if (e instanceof TypeError) {
@@ -266,11 +268,11 @@ const bindEvent = () => {
     })()
 
     // when typing price, add comma between number in debounce function
-    function debounce(fn, delay = 300) {
+    function debounce(callback, delay = 300) {
         let timer;
         return (...args) => {
             clearTimeout(timer);
-            timer = setTimeout(() => fn(...args), delay);
+            timer = setTimeout(() => callback(...args), delay);
         };
     }
 
@@ -286,6 +288,7 @@ const bindEvent = () => {
         const slug = document.getElementById("product-slug").value.trim();
         const description = document.getElementById("product-description").value.trim();
         const priceRaw = document.getElementById("product-price").value.replace(/\D/g, ""); // just get numbers
+        let discount_percent = document.getElementById("discount-percent").value.trim();
         const stock = Number(document.getElementById("product-inventory").value);
         const categoryField = document.getElementById("product-category").selectedOptions[0]
         const category = Number(categoryField.value);
@@ -300,19 +303,26 @@ const bindEvent = () => {
             return;
         }
 
+        if (discount_percent > 100) {
+            errorMessage.textContent = "درصد تخفیف باید بین ۰ تا ۱۰۰ باشد.";
+            return;
+        } else if (discount_percent < 0) {
+            discount_percent = 0
+        }
+
         const productData = {
             name,
             slug,
             description,
             price: Number(priceRaw),
+            discount_percent,
             stock,
             category,
-            tags: selectedTags
+            tags: selectedTags,
         };
 
         try {
-            const res = await handleCreateNewProduct(productData);
-            console.log("✅ محصول ساخته شد:", res);
+            await handleCreateNewProduct(productData);
             successMessage.textContent = "محصول با موفقیت اضافه شد!";
             errorMessage.textContent = "";
             createProductForm.reset();
