@@ -7,18 +7,15 @@ const baseApiURL = "/api";
 // handle error
 async function handleApiResponse(res) {
     let data;
-
     try {
         data = await res.json();
     } catch {
         throw new Error("پاسخ نامعتبر از سرور دریافت شد.");
     }
-
     if (!res.ok) {
         const message = data?.detail || "خطای ناشناخته از سرور.";
         throw new Error(message);
     }
-
     return data;
 }
 
@@ -29,9 +26,7 @@ async function loginUser(username, password, rememberMe) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({username, password}),
     })
-
     const data = await handleApiResponse(res)
-
     await tokenControl.setAccessToken(rememberMe, data?.access)
     return data
 }
@@ -48,9 +43,7 @@ async function newRefreshToken() {
         credentials: "include",
         headers: {"Content-Type": "application/json"},
     })
-
     const data = await handleApiResponse(res);
-
     await tokenControl.setAccessToken(rememberControl.rememberFlag === "true", data?.access)
     return data
 }
@@ -70,15 +63,14 @@ async function logOutUser() {
             "Content-Type": "application/json"
         }
     });
-    await handleApiResponse(res);
+    const data = await handleApiResponse(res);
     tokenControl.removeAccessToken()
-    return true
+    return data
 }
 
 // handle log out user
 async function handleLogoutUser() {
     const accessIsValid = await checkLoginStatus()
-
     if (accessIsValid) {
         return await logOutUser()
     } else {
@@ -102,7 +94,6 @@ async function getUserInfo() {
 // handle get user info
 async function handleGetUserInfo() {
     const accessIsValid = await checkLoginStatus()
-
     if (accessIsValid) {
         return await getUserInfo()
     } else {
@@ -152,7 +143,6 @@ async function createTag(name, slug) {
 // handle create tag
 async function handleCreateTag(name) {
     const accessIsValid = await checkLoginStatus()
-
     if (accessIsValid) {
         return await createTag(name);
     } else {
@@ -177,7 +167,6 @@ async function createNewProduct(productData) {
 // handle create new product
 async function handleCreateNewProduct(productData) {
     const accessIsValid = await checkLoginStatus()
-
     if (accessIsValid) {
         return await createNewProduct(productData);
     } else {
@@ -191,31 +180,16 @@ async function getAllCategories() {
     return await handleApiResponse(res);
 }
 
-// handle get all category
-async function handleGetAllCategories() {
-    return await getAllCategories()
-}
-
 // get all tags
 async function getAllTags() {
     const res = await fetch(`${baseApiURL}/tags/`)
     return await handleApiResponse(res);
 }
 
-// handle get all tags
-async function handleGetAllTag() {
-    return await getAllTags()
-}
-
 // get all product
 async function getAllProducts() {
     const res = await fetch(`${baseApiURL}/products/`)
     return await handleApiResponse(res);
-}
-
-// handle get all product
-async function handleGetAllProducts() {
-    return await getAllProducts()
 }
 
 export {
@@ -225,8 +199,8 @@ export {
     handleCreateCategory,
     handleLogoutUser,
     handleCreateTag,
-    handleGetAllCategories,
-    handleGetAllTag,
     handleCreateNewProduct,
-    handleGetAllProducts,
+    getAllTags,
+    getAllProducts,
+    getAllCategories
 }

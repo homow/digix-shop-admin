@@ -311,8 +311,7 @@ const bindEvent = () => {
         };
 
         try {
-            const res = await handleCreateNewProduct(productData);
-            console.log("✅ محصول ساخته شد:", res);
+            await handleCreateNewProduct(productData);
             successMessage.textContent = "محصول با موفقیت اضافه شد!";
             errorMessage.textContent = "";
             createProductForm.reset();
