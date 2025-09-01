@@ -7,9 +7,11 @@ const baseApiURL = "/api";
 // handle error
 async function handleApiResponse(res) {
     let data;
+    console.log(res)
     try {
         data = await res.json();
     } catch {
+        console.log(data)
         throw new Error("پاسخ نامعتبر از سرور دریافت شد.");
     }
     if (!res.ok) {
@@ -174,6 +176,32 @@ async function handleCreateNewProduct(productData) {
     }
 }
 
+async function addImageToProduct(id, image_url, alt_text) {
+    const getAccessToken = tokenControl.accessToken;
+    const res = await fetch(`${baseApiURL}/products/${id}/add_image/`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${getAccessToken}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            image_url,
+            alt_text
+        })
+    })
+    console.log(res)
+    return await handleApiResponse(res)
+}
+
+async function handleAddImageToProduct(id, objectImg) {
+    const accessIsValid = await checkLoginStatus()
+    if (accessIsValid) {
+        return await addImageToProduct(id, objectImg.image_url, objectImg.alt_text);
+    } else {
+        throw new Error(JSON.stringify(accessIsValid))
+    }
+}
+
 // get all category
 async function getAllCategories() {
     const res = await fetch(`${baseApiURL}/categories/`);
@@ -200,6 +228,7 @@ export {
     handleLogoutUser,
     handleCreateTag,
     handleCreateNewProduct,
+    handleAddImageToProduct,
     getAllTags,
     getAllProducts,
     getAllCategories

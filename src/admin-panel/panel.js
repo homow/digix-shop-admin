@@ -1,4 +1,4 @@
-import {handleCreateCategory, handleCreateTag, getAllCategories, getAllTags, handleCreateNewProduct} from "@/auth/auth.js";
+import {handleCreateCategory, handleCreateTag, getAllCategories, getAllTags, handleCreateNewProduct, handleAddImageToProduct} from "@/auth/auth.js";
 import {serverDisconnect, tokenControl} from "@/auth/api-utils.js";
 import {formatToPrice} from "@/utils.js"
 import {themeControl} from "@/ui/utils-ui.js";
@@ -47,11 +47,11 @@ const renderAdminPanel = () => {
 
     <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
       <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">نام دسته‌بندی</span>
-      <input type="text" id="category-name" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً کتاب" required />
+      <input type="text" id="category-name" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً کتاب" required />
     </label>
     <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
       <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">شناسه کوتاه (slug)</span>
-      <input type="text" id="category-slug" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً book" required />
+      <input type="text" id="category-slug" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً book" required />
     </label>
     <p data-error-message class="text-red-700 dark:text-red-500"></p>
     <button type="submit" class="primary-btn w-full">اضافه کردن دسته‌بندی</button>
@@ -64,7 +64,7 @@ const renderAdminPanel = () => {
 
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">نام برچسب</span>
-    <input type="text" id="tag-name" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً تخیلی" required />
+    <input type="text" id="tag-name" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً تخیلی" required />
   </label>
   <p data-error-message class="text-red-700 dark:text-red-500"></p>
   <button type="submit" class="primary-btn w-full">اضافه کردن برچسب</button>
@@ -78,36 +78,36 @@ const renderAdminPanel = () => {
   <!-- product name -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">نام محصول</span>
-    <input type="text" id="product-name" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً کتاب افسانه‌ای" required />
+    <input type="text" id="product-name" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً کتاب افسانه‌ای" required />
   </label>
  <!-- product slug -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">slug</span>
-    <input type="text" id="product-slug" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً fantasy-book" required />
+    <input type="text" id="product-slug" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً fantasy-book" required />
   </label>
 
   <!-- description -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">توضیحات</span>
-    <textarea id="product-description" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="توضیح کوتاه درباره محصول" required></textarea>
+    <textarea id="product-description" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="توضیح کوتاه درباره محصول" required></textarea>
   </label>
 
   <!-- price -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">قیمت (تومان)</span>
-    <input type="text" id="product-price" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً 12,0000" required min="0" dir="rtl"/>
+    <input type="text" id="product-price" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً 12,0000" required min="0" dir="rtl"/>
   </label>
   
   <!-- discount_percent -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">تخفیف (درصد)</span>
-    <input type="number" id="discount-percent" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً 20" dir="rtl"/>
+    <input type="number" id="discount-percent" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm"  placeholder="مثلاً 20" dir="rtl"/>
   </label>
 
   <!-- inventory -->
   <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
     <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">موجودی</span>
-    <input type="number" id="product-inventory" class="w-8/10 input-field border border-sub-text rounded p-2" placeholder="مثلاً 10" required min="0" />
+    <input type="number" id="product-inventory" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً 10" required min="0" />
   </label>
 
   <!-- category -->
@@ -127,6 +127,38 @@ const renderAdminPanel = () => {
   <p data-error-message class="my-8 text-center font-bold text-red-700 dark:text-red-500"></p>
   <button type="submit" class="primary-btn w-full">اضافه کردن محصول</button>
 </form>
+
+<!-- add image to product -->
+<form id="add-image-form" class="w-full max-w-200 bg-card-bg p-4 rounded shadow mt-4">
+  <h3 class="text-md font-bold mb-4 text-center">اضافه کردن تصویر</h3>
+  <h3 data-success-message class="my-4 text-green-800 dark:text-green-600 mx-auto text-center"></h3>
+  
+  <h5 class="mt-8">لیست تصاویر</h5>
+  <ul id="images-list" class="mt-4 mb-8 space-y-1 divide-y-2 border-2 p-2 rounded-sm"></ul>
+
+  <!-- src -->
+  <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
+    <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">مسیر تصویر</span>
+    <input dir="ltr" type="text" id="image-src" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً E:\\Users\\Pictures\\img.jpg" required />
+  </label>
+
+  <!-- alt_text -->
+  <label class="mb-4 flex flex-col sm:flex-row items-center justify-between">
+    <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">توضیح تصویر</span>
+    <input dir="ltr" type="text" id="image-alt" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" placeholder="مثلاً تصویر کالاف دیوتی 6" />
+  </label>
+
+  <p data-error-message class="my-4 text-center font-bold text-red-700 dark:text-red-500"></p>
+  <button type="submit" class="primary-btn w-full">اضافه کردن به لیست</button>
+
+<label class="mt-8 mb-4 flex flex-col sm:flex-row items-center justify-between">
+    <span class="text-sub-text max-sm:w-8/10 max-sm:text-right inline-block mb-2">آیدی محصول</span>
+    <input dir="ltr" type="number" id="product-id-image" class="w-8/10 input-field border border-sub-text rounded p-2 placeholder:text-sm" min="1" placeholder="مثال: 1"/>
+</label>
+  <!-- دکمه ارسال همه تصاویر -->
+  <button type="button" id="submit-images" class="secondary-btn w-full mt-4">ارسال همه تصاویر</button>
+</form>
+
 </div>
 </div>
 </section>
@@ -147,6 +179,9 @@ const bindEvent = () => {
     const createTagForm = document.getElementById("create-tag-form");
     const priceInput = document.getElementById("product-price");
     const createProductForm = document.getElementById("create-product-form");
+    const addImageForm = document.getElementById("add-image-form");
+    const imagesListEl = document.getElementById("images-list");
+    const submitImagesBtn = document.getElementById("submit-images");
 
     // theme control
     themeControl.setTheme(themeWrapper, root);
@@ -276,12 +311,14 @@ const bindEvent = () => {
         };
     }
 
+    // format number
     const handlePriceInput = debounce(() => {
         const value = priceInput.value.trim();
         priceInput.value = formatToPrice(value);
     }, 400);
     priceInput.addEventListener("input", handlePriceInput);
 
+    // create new product
     createProductForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const name = document.getElementById("product-name").value.trim();
@@ -336,6 +373,69 @@ const bindEvent = () => {
             }
         }
     })
+
+    // add image to product
+    const productImagesArray = [];
+    const src = document.getElementById("image-src");
+    const alt = document.getElementById("image-alt");
+    const successMessage = addImageForm.querySelector("[data-success-message]");
+    const errorMessage = addImageForm.querySelector("[data-error-message]");
+    const productID = document.getElementById("product-id-image");
+
+    addImageForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const srcValue = src.value.trim();
+        const altValue = alt.value.trim();
+
+        if (!srcValue) {
+            errorMessage.textContent = "لطفا تصویر را وارد کنید";
+            return;
+        }
+
+        // create object image
+        const imageObj = {
+            image_url: srcValue,
+            alt_text: altValue
+        };
+
+        // add to array
+        productImagesArray.push(imageObj);
+
+        // show list of image
+        const li = document.createElement("li");
+        li.textContent = `src: ${srcValue}, alt: ${altValue}`;
+        imagesListEl.appendChild(li);
+        src.value = ""
+        alt.value = ""
+    });
+
+    // send image list
+    submitImagesBtn.addEventListener("click", async () => {
+        const id = productID.value.trim();
+
+        if (productImagesArray.length === 0) {
+            errorMessage.textContent = "لیست تصاویر خالی است";
+            return;
+        } else if (id < 0 || !id) {
+            console.log(id)
+            errorMessage.textContent = "آیدی صحیح وارد کنید"
+            return;
+        }
+
+        try {
+            for (const img of productImagesArray) {
+                await handleAddImageToProduct(id, img)
+            }
+
+            successMessage.textContent = "تصاویر با موفقیت اضافه شد";
+            productImagesArray.length = 0;
+            imagesListEl.innerHTML = "";
+            addImageForm.reset();
+        } catch (err) {
+            console.error(err);
+            errorMessage.textContent = "خطا در ارسال تصویر";
+        }
+    });
 }
 
 export {renderAdminPanel}
