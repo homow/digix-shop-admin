@@ -174,6 +174,29 @@ async function handleCreateNewProduct(productData) {
     }
 }
 
+async function addImageToProduct(id, image_url, alt_text) {
+    const getAccessToken = tokenControl.accessToken;
+    const formData = new FormData();
+    formData.append('image_url', image_url);
+    formData.append('alt_text', alt_text);
+
+    const res = await fetch(`${baseApiURL}/products/${id}/add_image/`, {
+        method: "POST",
+        headers: {"Authorization": `Bearer ${getAccessToken}`},
+        body: formData
+    })
+    return await handleApiResponse(res)
+}
+
+async function handleAddImageToProduct(id, objectImg) {
+    const accessIsValid = await checkLoginStatus()
+    if (accessIsValid) {
+        return await addImageToProduct(id, objectImg.image_url, objectImg.alt_text);
+    } else {
+        throw new Error(JSON.stringify(accessIsValid))
+    }
+}
+
 // get all category
 async function getAllCategories() {
     const res = await fetch(`${baseApiURL}/categories/`);
@@ -200,6 +223,7 @@ export {
     handleLogoutUser,
     handleCreateTag,
     handleCreateNewProduct,
+    handleAddImageToProduct,
     getAllTags,
     getAllProducts,
     getAllCategories
