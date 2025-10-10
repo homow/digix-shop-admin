@@ -1,4 +1,4 @@
-import {handleCreateCategory, handleCreateTag, getAllCategories, getAllTags, handleCreateNewProduct, handleAddImageToProduct} from "@/auth/auth.js";
+import {handleCreateCategory, handleCreateTag, getAllCategories, getAllTags, handleCreateNewProduct, handleAddImageToProduct, handlerEditProduct} from "@/auth/auth.js";
 import {serverDisconnect, tokenControl} from "@/auth/api-utils.js";
 import {formatToPrice} from "@/utils.js"
 import {themeControl} from "@/ui/utils-ui.js";
