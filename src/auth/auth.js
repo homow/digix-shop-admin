@@ -215,6 +215,36 @@ async function getAllProducts() {
     return await handleApiResponse(res);
 }
 
+async function editProduct(id) {
+    const getAccessToken = tokenControl.accessToken;
+    console.log(getAccessToken);
+    
+    const res = await fetch(`${baseApiURL}/products/${id}/`, {
+        method: "PATCH",
+        headers: {
+            "Authorization": `Bearer ${getAccessToken}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: "Call of Duty Black Ops 6"
+        }
+    )})
+
+    console.log(res);
+
+    return await handleApiResponse(res)
+}
+
+async function handlerEditProduct (id) {
+    const accessIsValid = await checkLoginStatus()
+
+    if (accessIsValid) {
+        return await editProduct(id)
+    } else {
+        throw new Error(JSON.stringify(accessIsValid))
+    }
+}
+
 export {
     handleLoginUser,
     handleGetUserInfo,
@@ -226,5 +256,6 @@ export {
     handleAddImageToProduct,
     getAllTags,
     getAllProducts,
-    getAllCategories
+    getAllCategories,
+    handlerEditProduct
 }
